@@ -53,23 +53,21 @@ public class HeaderStructure
     {
         for (final Token token : tokens)
         {
-            switch (token.name())
+            if (BLOCK_LENGTH.equals(token.name()))
             {
-                case BLOCK_LENGTH:
-                    blockLengthType = token.encoding().primitiveType();
-                    break;
-
-                case TEMPLATE_ID:
-                    templateIdType = token.encoding().primitiveType();
-                    break;
-
-                case SCHEMA_ID:
-                    schemaIdType = token.encoding().primitiveType();
-                    break;
-
-                case SCHEMA_VERSION:
-                    schemaVersionType = token.encoding().primitiveType();
-                    break;
+                blockLengthType = token.encoding().primitiveType();
+            }
+            else if (TEMPLATE_ID.equals(token.name()))
+            {
+                templateIdType = token.encoding().primitiveType();
+            }
+            else if (SCHEMA_ID.equals(token.name()))
+            {
+                schemaIdType = token.encoding().primitiveType();
+            }
+            else if (SCHEMA_VERSION.equals(token.name()))
+            {
+                schemaVersionType = token.encoding().primitiveType();
             }
         }
     }

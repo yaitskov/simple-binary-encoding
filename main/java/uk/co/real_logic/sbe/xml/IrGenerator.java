@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class IrGenerator
 {
-    private final List<Token> tokenList = new ArrayList<>();
+    private final List<Token> tokenList = new ArrayList();
     private ByteOrder byteOrder = ByteOrder.LITTLE_ENDIAN;
     private int version = 0;
 

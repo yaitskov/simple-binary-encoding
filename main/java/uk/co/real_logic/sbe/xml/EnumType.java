@@ -42,8 +42,8 @@ public class EnumType extends Type
 {
     private final PrimitiveType encodingType;
     private final PrimitiveValue nullValue;
-    private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new LinkedHashMap<>();
-    private final Map<String, ValidValue> validValueByNameMap = new LinkedHashMap<>();
+    private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new LinkedHashMap();
+    private final Map<String, ValidValue> validValueByNameMap = new LinkedHashMap();
 
     /**
      * Construct a new enumType from XML Schema.
@@ -60,38 +60,64 @@ public class EnumType extends Type
         final String encodingTypeStr = getAttributeValue(node, "encodingType");
         final EncodedDataType encodedDataType;
 
-        switch (encodingTypeStr)
+        EncodingType ec = EncodingType.parse(encodingTypeStr);
+        if (ec == null)
         {
-            case "char":
-            case "uint8":
-            case "int8":
-            case "int16":
-            case "uint16":
-            case "int32":
-                encodingType = PrimitiveType.get(encodingTypeStr);
-                encodedDataType = null;
-                break;
-
-            default:
-                // might not have ran into this type yet, so look for it
-                final Node encodingTypeNode =
+            // might not have ran into this type yet, so look for it
+            final Node encodingTypeNode =
                     (Node)xPath.compile(String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
-                               .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
+                            .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
-                if (null == encodingTypeNode)
-                {
-                    throw new IllegalArgumentException("illegal encodingType for enum " + encodingTypeStr);
-                }
+            if (null == encodingTypeNode)
+            {
+                throw new IllegalArgumentException("illegal encodingType for enum " + encodingTypeStr);
+            }
 
-                encodedDataType = new EncodedDataType(encodingTypeNode);
+            encodedDataType = new EncodedDataType(encodingTypeNode);
 
-                if (encodedDataType.length() != 1)
-                {
-                    throw new IllegalArgumentException(
+            if (encodedDataType.length() != 1)
+            {
+                throw new IllegalArgumentException(
                         "illegal encodingType for enum " + encodingTypeStr + " length not equal to 1");
-                }
+            }
 
-                encodingType = encodedDataType.primitiveType();
+            encodingType = encodedDataType.primitiveType();
+        }
+        else
+        {
+            switch (ec)
+            {
+                case _char:
+                case uint8:
+                case int8:
+                case int16:
+                case uint16:
+                case int32:
+                    encodingType = PrimitiveType.get(encodingTypeStr);
+                    encodedDataType = null;
+                    break;
+                default:
+                    // might not have ran into this type yet, so look for it
+                    final Node encodingTypeNode =
+                            (Node)xPath.compile(String.format("%s[@name=\'%s\']",
+                                    XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
+                                    .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
+
+                    if (null == encodingTypeNode)
+                    {
+                        throw new IllegalArgumentException("illegal encodingType for enum " + encodingTypeStr);
+                    }
+
+                    encodedDataType = new EncodedDataType(encodingTypeNode);
+
+                    if (encodedDataType.length() != 1)
+                    {
+                        throw new IllegalArgumentException(
+                                "illegal encodingType for enum " + encodingTypeStr + " length not equal to 1");
+                    }
+
+                    encodingType = encodedDataType.primitiveType();
+            }
         }
 
         final String nullValueStr = getAttributeValueOrNull(node, "nullValue");

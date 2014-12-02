@@ -26,7 +26,7 @@ import java.util.Map;
 public class StringWriterOutputManager implements OutputManager
 {
     private String packageName;
-    private final Map<String, StringWriter> sourceFileByName = new HashMap<>();
+    private final Map<String, StringWriter> sourceFileByName = new HashMap();
 
     public Writer createOutput(final String name) throws IOException
     {
@@ -48,7 +48,7 @@ public class StringWriterOutputManager implements OutputManager
 
     public Map<String, CharSequence> getSources()
     {
-        final Map<String, CharSequence> sources = new HashMap<>();
+        final Map<String, CharSequence> sources = new HashMap();
         for (final Map.Entry<String, StringWriter> entry : sourceFileByName.entrySet())
         {
             sources.put(entry.getKey(), entry.getValue().toString());

@@ -37,8 +37,8 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 public class SetType extends Type
 {
     private final PrimitiveType encodingType;
-    private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new LinkedHashMap<>();
-    private final Map<String, Choice> choiceByNameMap = new LinkedHashMap<>();
+    private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new LinkedHashMap();
+    private final Map<String, Choice> choiceByNameMap = new LinkedHashMap();
 
     /**
      * Construct a new SetType from XML Schema.
@@ -55,34 +55,56 @@ public class SetType extends Type
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final String encodingTypeStr = getAttributeValue(node, "encodingType");
 
-        switch (encodingTypeStr)
+        EncodingType ec = EncodingType.parse(encodingTypeStr);
+        if (ec == null)
         {
-            case "uint8":
-            case "uint16":
-            case "uint32":
-            case "uint64":
-                encodingType = PrimitiveType.get(encodingTypeStr);
-                break;
-
-            default:
-                // might not have ran into this type yet, so look for it
-                final Node encodingTypeNode = (Node)xPath.compile(
+            // might not have ran into this type yet, so look for it
+            final Node encodingTypeNode = (Node)xPath.compile(
                     String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
                     .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
-                if (encodingTypeNode == null)
-                {
-                    encodingType = null;
-                }
-                else if (Integer.parseInt(getAttributeValue(encodingTypeNode, "length", "1")) != 1)
-                {
-                    encodingType = null;
-                }
-                else
-                {
-                    encodingType = PrimitiveType.get(getAttributeValue(encodingTypeNode, "primitiveType"));
-                }
-                break;
+            if (encodingTypeNode == null)
+            {
+                encodingType = null;
+            }
+            else if (Integer.parseInt(getAttributeValue(encodingTypeNode, "length", "1")) != 1)
+            {
+                encodingType = null;
+            }
+            else
+            {
+                encodingType = PrimitiveType.get(getAttributeValue(encodingTypeNode, "primitiveType"));
+            }
+        }
+        else
+        {
+            switch (ec)
+            {
+                case uint8:
+                case uint16:
+                case uint32:
+                case uint64:
+                    encodingType = PrimitiveType.get(encodingTypeStr);
+                    break;
+                default:
+                    // might not have ran into this type yet, so look for it
+                    final Node encodingTypeNode = (Node)xPath.compile(
+                            String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
+                            .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
+
+                    if (encodingTypeNode == null)
+                    {
+                        encodingType = null;
+                    }
+                    else if (Integer.parseInt(getAttributeValue(encodingTypeNode, "length", "1")) != 1)
+                    {
+                        encodingType = null;
+                    }
+                    else
+                    {
+                        encodingType = PrimitiveType.get(getAttributeValue(encodingTypeNode, "primitiveType"));
+                    }
+            }
         }
 
         if (encodingType == null)

@@ -32,8 +32,8 @@ public class Ir
     private final String semanticVersion;
 
     private final HeaderStructure headerStructure;
-    private final Map<Long, List<Token>> messagesByIdMap = new HashMap<>();
-    private final Map<String, List<Token>> typesByNameMap = new HashMap<>();
+    private final Map<Long, List<Token>> messagesByIdMap = new HashMap();
+    private final Map<String, List<Token>> typesByNameMap = new HashMap();
 
     /**
      * Create a new IR container taking a defensive copy of the headerStructure {@link Token}s passed.
@@ -61,7 +61,7 @@ public class Ir
         this.id = id;
         this.version = version;
         this.semanticVersion = semanticVersion;
-        this.headerStructure = new HeaderStructure(Collections.unmodifiableList(new ArrayList<>(headerTokens)));
+        this.headerStructure = new HeaderStructure(Collections.unmodifiableList(new ArrayList(headerTokens)));
     }
 
     /**
@@ -86,7 +86,7 @@ public class Ir
 
         captureTypes(messageTokens);
 
-        messagesByIdMap.put(Long.valueOf(messageId), Collections.unmodifiableList(new ArrayList<>(messageTokens)));
+        messagesByIdMap.put(Long.valueOf(messageId), Collections.unmodifiableList(new ArrayList(messageTokens)));
     }
 
     /**
@@ -216,7 +216,7 @@ public class Ir
 
     private int captureType(final List<Token> tokens, int index, final Signal endSignal)
     {
-        final List<Token> typeTokens = new ArrayList<>();
+        final List<Token> typeTokens = new ArrayList();
 
         Token token = tokens.get(index);
         typeTokens.add(token);

@@ -121,7 +121,7 @@ public class XmlSchemaParser
      */
     public static Map<String, Type> findTypes(final Document document, final XPath xPath) throws Exception
     {
-        final Map<String, Type> typeByNameMap = new HashMap<>();
+        final Map<String, Type> typeByNameMap = new HashMap();
 
         // Add primitiveTypes to typeByNameMap - these could be in a static XInclude that is always brought in...
         typeByNameMap.put("char", new EncodedDataType("char", REQUIRED, null, null, CHAR, 1, false));
@@ -188,7 +188,7 @@ public class XmlSchemaParser
         final Document document, final XPath xPath, final Map<String, Type> typeByNameMap)
         throws Exception
     {
-        final Map<Long, Message> messageByIdMap = new HashMap<>();
+        final Map<Long, Message> messageByIdMap = new HashMap();
 
         forEach((NodeList)xPath.compile(MESSAGE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
                 new NodeFunction()
@@ -310,17 +310,17 @@ public class XmlSchemaParser
      */
     public static ByteOrder getByteOrder(final String byteOrderName)
     {
-        switch (byteOrderName)
+        if ("littleEndian".equals(byteOrderName))
         {
-            case "littleEndian":
-                return ByteOrder.LITTLE_ENDIAN;
-
-            case "bigEndian":
-                return ByteOrder.BIG_ENDIAN;
-
-            default:
-                return ByteOrder.LITTLE_ENDIAN;
+            return ByteOrder.LITTLE_ENDIAN;
         }
+
+        if ("bigEndian".equals(byteOrderName))
+        {
+            return ByteOrder.BIG_ENDIAN;
+        }
+
+        return ByteOrder.LITTLE_ENDIAN;
     }
 
     /**

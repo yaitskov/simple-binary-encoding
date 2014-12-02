@@ -50,7 +50,8 @@ public class JavaGenerator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
+        final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE);
+        try
         {
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.applicableNamespace()));
@@ -60,6 +61,10 @@ public class JavaGenerator implements CodeGenerator
                 MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
+        }
+        finally
+        {
+            out.close();
         }
     }
 
@@ -96,15 +101,16 @@ public class JavaGenerator implements CodeGenerator
             final Token msgToken = tokens.get(0);
             final String className = formatClassName(msgToken.name());
 
-            try (final Writer out = outputManager.createOutput(className))
+            final Writer out = outputManager.createOutput(className);
+            try
             {
                 out.append(generateFileHeader(ir.applicableNamespace()));
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
 
-                final List<Token> rootFields = new ArrayList<>();
+                final List<Token> rootFields = new ArrayList();
                 offset = collectRootFields(messageBody, offset, rootFields);
-                final List<Token> groups = new ArrayList<>();
+                final List<Token> groups = new ArrayList();
                 offset = collectGroups(messageBody, offset, groups);
 
                 generateAnnotations(className, groups, out, 0);
@@ -121,6 +127,10 @@ public class JavaGenerator implements CodeGenerator
                 out.append(generateVarData(varData));
 
                 out.append("}\n");
+            }
+            finally
+            {
+                out.close();
             }
         }
     }
@@ -179,7 +189,7 @@ public class JavaGenerator implements CodeGenerator
                 generateAnnotations(formatClassName(groupName), tokens, sb, index + 1);
                 generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
 
-                final List<Token> rootFields = new ArrayList<>();
+                final List<Token> rootFields = new ArrayList();
                 index = collectRootFields(tokens, ++index, rootFields);
                 sb.append(generateFields(groupClassName, rootFields, indent + INDENT));
 
@@ -456,7 +466,8 @@ public class JavaGenerator implements CodeGenerator
     {
         final String bitSetName = formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(bitSetName))
+        final Writer out = outputManager.createOutput(bitSetName);
+        try
         {
             out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(bitSetName));
@@ -466,13 +477,18 @@ public class JavaGenerator implements CodeGenerator
 
             out.append("}\n");
         }
+        finally
+        {
+            out.close();
+        }
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
     {
         final String enumName = formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(enumName))
+        final Writer out = outputManager.createOutput(enumName);
+        try
         {
             out.append(generateEnumFileHeader(ir.applicableNamespace()));
             out.append(generateEnumDeclaration(enumName));
@@ -484,13 +500,18 @@ public class JavaGenerator implements CodeGenerator
 
             out.append("}\n");
         }
+        finally
+        {
+            out.close();
+        }
     }
 
     private void generateComposite(final List<Token> tokens) throws IOException
     {
         final String compositeName = formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(compositeName))
+        final Writer out = outputManager.createOutput(compositeName);
+        try
         {
             out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(compositeName));
@@ -499,6 +520,10 @@ public class JavaGenerator implements CodeGenerator
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
+        }
+        finally
+        {
+            out.close();
         }
     }
 
@@ -669,7 +694,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateAnnotations(String className, final List<Token> tokens, Appendable out,
                                      int index) throws IOException
     {
-        final List<String> groupClassNames = new ArrayList<>();
+        final List<String> groupClassNames = new ArrayList();
         int level = 0;
         for (int size = tokens.size(); index < size; index++)
         {
@@ -719,7 +744,8 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateMetaAttributeEnum() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
+        final Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM);
+        try
         {
             out.append(String.format(
                 "/* Generated SBE (Simple Binary Encoding) message codec */\n" +
@@ -732,6 +758,10 @@ public class JavaGenerator implements CodeGenerator
                 "}\n",
                 ir.applicableNamespace()
             ));
+        }
+        finally
+        {
+            out.close();
         }
     }
 

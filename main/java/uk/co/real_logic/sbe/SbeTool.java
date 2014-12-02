@@ -156,9 +156,14 @@ public class SbeTool
                 final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
                 final File fullPath = new File(outputDirName, namePart + ".sbeir");
 
-                try (final IrEncoder irEncoder = new IrEncoder(fullPath.getAbsolutePath(), ir))
+                final IrEncoder irEncoder = new IrEncoder(fullPath.getAbsolutePath(), ir);
+                try
                 {
                     irEncoder.encode();
+                }
+                finally
+                {
+                    irEncoder.close();
                 }
             }
         }
@@ -174,9 +179,14 @@ public class SbeTool
     public static void validateAgainstSchema(final String sbeSchemaFilename, final String xsdFilename)
         throws Exception
     {
-        try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
+        final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename));
+        try
         {
             XmlSchemaParser.validate(xsdFilename, in);
+        }
+        finally
+        {
+            in.close();
         }
     }
 
@@ -197,9 +207,14 @@ public class SbeTool
                          .warningsFatal(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_WARNINGS_FATAL)))
                          .suppressOutput(Boolean.parseBoolean(System.getProperty(SbeTool.VALIDATION_SUPPRESS_OUTPUT)));
 
-        try (final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename)))
+        final BufferedInputStream in = new BufferedInputStream(new FileInputStream(sbeSchemaFilename));
+        try
         {
             return XmlSchemaParser.parse(in, optionsBuilder.build());
+        }
+        finally
+        {
+            in.close();
         }
     }
 

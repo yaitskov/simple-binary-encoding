@@ -58,31 +58,29 @@ public class OtfHeaderDecoder
 
         for (final Token token : headerStructure.tokens())
         {
-            switch (token.name())
+            if (HeaderStructure.BLOCK_LENGTH.equals(token.name()))
             {
-                case HeaderStructure.BLOCK_LENGTH:
-                    blockLengthOffset = token.offset();
-                    blockLengthType = token.encoding().primitiveType();
-                    blockLengthByteOrder = token.encoding().byteOrder();
-                    break;
-
-                case HeaderStructure.TEMPLATE_ID:
-                    templateIdOffset = token.offset();
-                    templateIdType = token.encoding().primitiveType();
-                    templateIdByteOrder = token.encoding().byteOrder();
-                    break;
-
-                case HeaderStructure.SCHEMA_ID:
-                    schemaIdOffset = token.offset();
-                    schemaIdType = token.encoding().primitiveType();
-                    schemaIdByteOrder = token.encoding().byteOrder();
-                    break;
-
-                case HeaderStructure.SCHEMA_VERSION:
-                    schemaVersionOffset = token.offset();
-                    schemaVersionType = token.encoding().primitiveType();
-                    schemaVersionByteOrder = token.encoding().byteOrder();
-                    break;
+                blockLengthOffset = token.offset();
+                blockLengthType = token.encoding().primitiveType();
+                blockLengthByteOrder = token.encoding().byteOrder();
+            }
+            else if (HeaderStructure.TEMPLATE_ID.equals(token.name()))
+            {
+                templateIdOffset = token.offset();
+                templateIdType = token.encoding().primitiveType();
+                templateIdByteOrder = token.encoding().byteOrder();
+            }
+            else if (HeaderStructure.SCHEMA_ID.equals(token.name()))
+            {
+                schemaIdOffset = token.offset();
+                schemaIdType = token.encoding().primitiveType();
+                schemaIdByteOrder = token.encoding().byteOrder();
+            }
+            else if (HeaderStructure.SCHEMA_VERSION.equals(token.name()))
+            {
+                schemaVersionOffset = token.offset();
+                schemaVersionType = token.encoding().primitiveType();
+                schemaVersionByteOrder = token.encoding().byteOrder();
             }
         }
     }

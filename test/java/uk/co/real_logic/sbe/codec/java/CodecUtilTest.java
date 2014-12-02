@@ -34,7 +34,7 @@ public class CodecUtilTest
     @Test
     public void shouldTestBitInByte()
     {
-        final byte bits = (byte)0b1000_0000;
+        final byte bits = (byte)0x80;
         final int bufferIndex = 8;
         final int bitIndex = 7;
         buffer.putByte(bufferIndex, bits);
@@ -70,7 +70,7 @@ public class CodecUtilTest
     @Test
     public void shouldTestBitInShort()
     {
-        final short bits = (short)0b0000_0000_0000_0100;
+        final short bits = (short)0x4;
         final int bufferIndex = 8;
         final int bitIndex = 2;
         buffer.putShort(bufferIndex, bits, BYTE_ORDER);
@@ -106,7 +106,7 @@ public class CodecUtilTest
     @Test
     public void shouldTestBitInInt()
     {
-        final int bits = 0b0000_0000_0000_0000_0000_0000_0000_0100;
+        final int bits = 0x4;
         final int bufferIndex = 8;
         final int bitIndex = 2;
         buffer.putInt(bufferIndex, bits, BYTE_ORDER);

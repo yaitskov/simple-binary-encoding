@@ -26,12 +26,15 @@ import uk.co.real_logic.sbe.ir.Token;
 import uk.co.real_logic.sbe.util.Verify;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
+import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.cSharpTypeName;
+import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.formatClassName;
+import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.formatPropertyName;
+import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.toLowerFirstChar;
+import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.toUpperFirstChar;
 
 public class CSharpGenerator implements CodeGenerator
 {
@@ -55,17 +58,6 @@ public class CSharpGenerator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
-        {
-            final List<Token> tokens = ir.headerStructure().tokens();
-            out.append(generateFileHeader(ir.applicableNamespace()));
-            out.append(generateClassDeclaration(MESSAGE_HEADER_TYPE));
-            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
-            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
-
-            out.append("    }\n");
-            out.append("}\n");
-        }
     }
 
     public void generateTypeStubs() throws IOException
@@ -101,31 +93,6 @@ public class CSharpGenerator implements CodeGenerator
             final Token msgToken = tokens.get(0);
             final String className = formatClassName(msgToken.name());
 
-            try (final Writer out = outputManager.createOutput(className))
-            {
-                out.append(generateFileHeader(ir.applicableNamespace()));
-                out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken));
-
-                final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
-                int offset = 0;
-
-                final List<Token> rootFields = new ArrayList<>();
-                offset = collectRootFields(messageBody, offset, rootFields);
-                out.append(generateFields(rootFields, BASE_INDENT));
-
-                final List<Token> groups = new ArrayList<>();
-                offset = collectGroups(messageBody, offset, groups);
-                final StringBuilder sb = new StringBuilder();
-                generateGroups(sb, className, groups, 0, BASE_INDENT);
-                out.append(sb);
-
-                final List<Token> varData = messageBody.subList(offset, messageBody.size());
-                out.append(generateVarData(varData));
-
-                out.append("    }\n");
-                out.append("}\n");
-            }
         }
     }
 
@@ -176,7 +143,7 @@ public class CSharpGenerator implements CodeGenerator
 
                 generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, index, indent + INDENT);
 
-                final List<Token> rootFields = new ArrayList<>();
+                final List<Token> rootFields = new ArrayList();
                 index = collectRootFields(tokens, ++index, rootFields);
                 sb.append(generateFields(rootFields, indent + INDENT));
 
@@ -417,18 +384,6 @@ public class CSharpGenerator implements CodeGenerator
         Token enumToken = tokens.get(0);
         final String enumName = CSharpUtil.formatClassName(enumToken.name());
 
-        try (final Writer out = outputManager.createOutput(enumName))
-        {
-            out.append(generateFileHeader(ir.applicableNamespace()));
-            String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
-            out.append(generateEnumDeclaration(enumName, enumPrimitiveType, true));
-
-            out.append(generateChoices(tokens.subList(1, tokens.size() - 1)));
-
-            out.append(INDENT).append("}\n");
-
-            out.append("}\n");
-        }
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
@@ -436,35 +391,12 @@ public class CSharpGenerator implements CodeGenerator
         Token enumToken = tokens.get(0);
         final String enumName = CSharpUtil.formatClassName(enumToken.name());
 
-        try (final Writer out = outputManager.createOutput(enumName))
-        {
-            out.append(generateFileHeader(ir.applicableNamespace()));
-            String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
-            out.append(generateEnumDeclaration(enumName, enumPrimitiveType, false));
-
-            out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
-
-            out.append(INDENT).append("}\n");
-
-            out.append("}\n");
-        }
     }
 
     private void generateComposite(final List<Token> tokens) throws IOException
     {
         final String compositeName = CSharpUtil.formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(compositeName))
-        {
-            out.append(generateFileHeader(ir.applicableNamespace()));
-            out.append(generateClassDeclaration(compositeName));
-            out.append(generateFixedFlyweightCode(tokens.get(0).size()));
-
-            out.append(generatePrimitivePropertyEncodings(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
-
-            out.append("    }\n");
-            out.append("}\n");
-        }
     }
 
     private CharSequence generateChoices(final List<Token> tokens)
@@ -539,20 +471,6 @@ public class CSharpGenerator implements CodeGenerator
 
     private void generateMetaAttributeEnum() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
-        {
-            out.append(generateFileHeader(ir.applicableNamespace()));
-
-            out.append(String.format(
-                "    public enum MetaAttribute\n" +
-                "    {\n" +
-                "        Epoch,\n" +
-                "        TimeUnit,\n" +
-                "        SemanticType\n" +
-                "    }\n" +
-                "}\n"
-            ));
-        }
     }
 
     private CharSequence generateEnumDeclaration(final String name, final String primitiveType, final boolean addFlagsAttribute)
@@ -1209,19 +1127,10 @@ public class CSharpGenerator implements CodeGenerator
 
     private String generateByteOrder(final ByteOrder byteOrder, final int primitiveTypeSize)
     {
-        if (primitiveTypeSize == 1)
-        {
+
             return "";
-        }
 
-        switch (byteOrder.toString())
-        {
-            case "BIG_ENDIAN":
-                return "BigEndian";
 
-            default:
-                return "LittleEndian";
-        }
     }
 
     private String generateLiteral(final PrimitiveType type, final String value)

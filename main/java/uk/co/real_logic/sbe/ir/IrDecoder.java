@@ -82,7 +82,7 @@ public class IrDecoder implements Closeable
     {
         decodeFrame();
 
-        final List<Token> tokens = new ArrayList<>();
+        final List<Token> tokens = new ArrayList();
         while (offset < size)
         {
             tokens.add(decodeToken());
@@ -110,7 +110,7 @@ public class IrDecoder implements Closeable
 
     private int captureHeader(final List<Token> tokens, int index)
     {
-        final List<Token> headerTokens = new ArrayList<>();
+        final List<Token> headerTokens = new ArrayList();
 
         Token token = tokens.get(index);
         headerTokens.add(token);
@@ -128,7 +128,7 @@ public class IrDecoder implements Closeable
 
     private int captureMessage(final List<Token> tokens, int index, final Ir ir)
     {
-        final List<Token> messageTokens = new ArrayList<>();
+        final List<Token> messageTokens = new ArrayList();
 
         Token token = tokens.get(index);
         messageTokens.add(token);

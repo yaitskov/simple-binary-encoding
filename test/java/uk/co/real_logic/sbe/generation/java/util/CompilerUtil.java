@@ -36,8 +36,8 @@ public class CompilerUtil
             throw new IllegalStateException("JDK required to run tests. JRE is not sufficient.");
         }
 
-        final JavaFileManager fileManager = new ClassFileManager<>(compiler.getStandardFileManager(null, null, null));
-        final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        final JavaFileManager fileManager = new ClassFileManager(compiler.getStandardFileManager(null, null, null));
+        final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector();
 
         final JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, null, null, wrap(sources));
 
@@ -69,10 +69,10 @@ public class CompilerUtil
             throw new IllegalStateException("JDK required to run tests. JRE is not sufficient.");
         }
 
-        final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector();
         final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
-        List<String> options = new ArrayList<>();
+        List<String> options = new ArrayList();
         options.addAll(Arrays.asList("-classpath", System.getProperty("java.class.path") + File.pathSeparator + TEMP_DIR_NAME));
 
         final Collection<File> files = persist(sources);
@@ -106,7 +106,7 @@ public class CompilerUtil
     private static Collection<File> persist(final Map<String, CharSequence> sources)
         throws Exception
     {
-        final Collection<File> files = new ArrayList<>(sources.size());
+        final Collection<File> files = new ArrayList(sources.size());
         for (final Map.Entry<String, CharSequence> entry : sources.entrySet())
         {
             final String fqClassName = entry.getKey();
@@ -127,10 +127,15 @@ public class CompilerUtil
             final File file = new File(path.toString(), className + ".java");
             files.add(file);
 
-            try (final FileWriter out = new FileWriter(file))
+            final FileWriter out = new FileWriter(file);
+            try
             {
                 out.append(entry.getValue());
                 out.flush();
+            }
+            finally
+            {
+                out.close();
             }
         }
 
@@ -139,7 +144,7 @@ public class CompilerUtil
 
     private static Collection<CharSequenceJavaFileObject> wrap(final Map<String, CharSequence> sources)
     {
-        final Collection<CharSequenceJavaFileObject> collection = new ArrayList<>(sources.size());
+        final Collection<CharSequenceJavaFileObject> collection = new ArrayList(sources.size());
         for (final Map.Entry<String, CharSequence> entry : sources.entrySet())
         {
             collection.add(new CharSequenceJavaFileObject(entry.getKey(), entry.getValue()));

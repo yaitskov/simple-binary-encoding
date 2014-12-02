@@ -35,8 +35,8 @@ import java.util.Map;
  */
 public class CompositeType extends Type
 {
-    private final List<EncodedDataType> containedTypeList = new ArrayList<>();
-    private final Map<String, EncodedDataType> containedTypeByNameMap = new HashMap<>();
+    private final List<EncodedDataType> containedTypeList = new ArrayList();
+    private final Map<String, EncodedDataType> containedTypeByNameMap = new HashMap();
     private final int sinceVersion;
 
     /**

@@ -126,7 +126,7 @@ public class JavaGeneratorTest
     {
         final int bufferOffset = 8;
         final int actingVersion = 0;
-        final Byte bitset = Byte.valueOf((byte)0b0000_0100);
+        final Byte bitset = Byte.valueOf((byte)0x4);
         final String className = "OptionalExtras";
         final String fqClassName = ir.applicableNamespace() + "." + className;
 

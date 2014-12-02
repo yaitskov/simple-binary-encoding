@@ -54,7 +54,8 @@ public class JavaMockPojoGenerator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE + MOCK))
+        final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE + MOCK);
+        try
         {
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.applicableNamespace()));
@@ -64,6 +65,10 @@ public class JavaMockPojoGenerator implements CodeGenerator
                 MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
+        }
+        finally
+        {
+            out.close();
         }
     }
 
@@ -89,13 +94,18 @@ public class JavaMockPojoGenerator implements CodeGenerator
     {
         final String bitSetName = formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(bitSetName + MOCK))
+        final Writer out = outputManager.createOutput(bitSetName + MOCK);
+        try
         {
             out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(bitSetName));
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
 
             out.append("}\n");
+        }
+        finally
+        {
+            out.close();
         }
     }
 
@@ -140,7 +150,8 @@ public class JavaMockPojoGenerator implements CodeGenerator
             final Token msgToken = tokens.get(0);
             final String className = formatClassName(msgToken.name());
 
-            try (final Writer out = outputManager.createOutput(className + MOCK))
+            final Writer out = outputManager.createOutput(className + MOCK);
+            try
             {
                 out.append(generateFileHeader(ir.applicableNamespace()));
                 out.append(generateClassDeclaration(className));
@@ -148,16 +159,20 @@ public class JavaMockPojoGenerator implements CodeGenerator
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
 
-                final List<Token> rootFields = new ArrayList<>();
+                final List<Token> rootFields = new ArrayList();
                 collectRootFields(messageBody, offset, rootFields);
                 out.append(generateFields(className, rootFields, BASE_INDENT));
 
-                final List<Token> groups = new ArrayList<>();
+                final List<Token> groups = new ArrayList();
                 collectGroups(messageBody, offset, groups);
                 final StringBuilder sb = new StringBuilder();
                 generateGroups(sb, className, groups, 0, BASE_INDENT);
                 out.append(sb);
                 out.append("}\n");
+            }
+            finally
+            {
+                out.close();
             }
         }
     }
@@ -211,7 +226,7 @@ public class JavaMockPojoGenerator implements CodeGenerator
 
                 generateGroupClassHeader(sb, groupName, indent + INDENT);
 
-                final List<Token> rootFields = new ArrayList<>();
+                final List<Token> rootFields = new ArrayList();
                 index = collectRootFields(tokens, ++index, rootFields);
                 sb.append(generateFields(groupClassName, rootFields, indent + INDENT));
 
@@ -280,13 +295,18 @@ public class JavaMockPojoGenerator implements CodeGenerator
     {
         final String compositeName = formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(compositeName + MOCK))
+        final Writer out = outputManager.createOutput(compositeName + MOCK);
+        try
         {
             out.append(generateFileHeader(ir.applicableNamespace()));
             out.append(generateClassDeclaration(compositeName));
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append("}\n");
+        }
+        finally
+        {
+            out.close();
         }
     }
 

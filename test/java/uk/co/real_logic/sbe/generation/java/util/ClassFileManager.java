@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class ClassFileManager<M extends JavaFileManager> extends ForwardingJavaFileManager<M>
 {
-    private final Map<String, JavaClassObject> classObjectByNameMap = new HashMap<>();
+    private final Map<String, JavaClassObject> classObjectByNameMap = new HashMap();
 
     public ClassFileManager(final M standardManager)
     {

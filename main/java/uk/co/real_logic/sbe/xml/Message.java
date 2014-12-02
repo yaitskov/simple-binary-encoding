@@ -158,16 +158,16 @@ public class Message
         final NodeList list = (NodeList)xPath.compile(FIELD_OR_GROUP_OR_DATA_EXPR).evaluate(node, XPathConstants.NODESET);
         boolean groupEncountered = false, dataEncountered = false;
 
-        final List<Field> fieldList = new ArrayList<>();
+        final List<Field> fieldList = new ArrayList();
 
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             Field field;
 
             final String nodeName = list.item(i).getNodeName();
-            switch (nodeName)
+            switch (NodeName.valueOf(nodeName))
             {
-                case "group":
+                case group:
                     if (dataEncountered)
                     {
                         handleError(node, "group node specified after data node");
@@ -177,12 +177,12 @@ public class Message
                     groupEncountered = true;
                     break;
 
-                case "data":
+                case data:
                     field = parseDataField(list, i);
                     dataEncountered = true;
                     break;
 
-                case "field":
+                case field:
                     if (groupEncountered || dataEncountered)
                     {
                         handleError(node, "field node specified after group or data node specified");

@@ -84,7 +84,7 @@ public class ErrorHandlerTest
             "<type name=\"NullButNotOptional\" primitiveType=\"int8\" presence=\"required\" nullValue=\"10\"/>" +
             "</types>";
 
-        final Map<String, Type> map = new HashMap<>();
+        final Map<String, Type> map = new HashMap();
         final ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
         final ErrorHandler handler = new ErrorHandler(options);
 

@@ -252,7 +252,7 @@ public class EnumTypeTest
             new ByteArrayInputStream(xml.getBytes()));
         final XPath xPath = XPathFactory.newInstance().newXPath();
         final NodeList list = (NodeList)xPath.compile(xPathExpr).evaluate(document, XPathConstants.NODESET);
-        final Map<String, Type> map = new HashMap<>();
+        final Map<String, Type> map = new HashMap();
 
         final ParserOptions options = ParserOptions.builder().stopOnError(true).suppressOutput(true).warningsFatal(true).build();
         document.setUserData(XmlSchemaParser.ERROR_HANDLER_KEY, new ErrorHandler(options), null);

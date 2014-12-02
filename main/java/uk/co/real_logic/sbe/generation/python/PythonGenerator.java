@@ -51,7 +51,8 @@ public class PythonGenerator implements CodeGenerator
 
     public void generateMessageHeaderStub() throws IOException
     {
-        try (final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE))
+        final Writer out = outputManager.createOutput(MESSAGE_HEADER_TYPE);
+        try
         {
             final List<Token> tokens = ir.headerStructure().tokens();
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
@@ -60,11 +61,15 @@ public class PythonGenerator implements CodeGenerator
             out.append(
                 generatePrimitivePropertyEncodings(MESSAGE_HEADER_TYPE, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
         }
+        finally
+        {
+            out.close();
+        }
     }
 
     public List<String> generateTypeStubs() throws IOException
     {
-        final List<String> typesToInclude = new ArrayList<>();
+        final List<String> typesToInclude = new ArrayList();
 
         for (final List<Token> tokens : ir.types())
         {
@@ -99,7 +104,8 @@ public class PythonGenerator implements CodeGenerator
             final Token msgToken = tokens.get(0);
             final String className = formatClassName(msgToken.name());
 
-            try (final Writer out = outputManager.createOutput(className))
+            final Writer out = outputManager.createOutput(className);
+            try
             {
                 out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), typesToInclude));
                 out.append(generateClassDeclaration(className));
@@ -108,11 +114,11 @@ public class PythonGenerator implements CodeGenerator
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
 
-                final List<Token> rootFields = new ArrayList<>();
+                final List<Token> rootFields = new ArrayList();
                 offset = collectRootFields(messageBody, offset, rootFields);
                 out.append(generateFields(className, rootFields, BASE_INDENT));
 
-                final List<Token> groups = new ArrayList<>();
+                final List<Token> groups = new ArrayList();
                 offset = collectGroups(messageBody, offset, groups);
                 StringBuilder sb = new StringBuilder();
                 generateGroups(sb, groups, 0, BASE_INDENT);
@@ -120,6 +126,10 @@ public class PythonGenerator implements CodeGenerator
 
                 final List<Token> varData = messageBody.subList(offset, messageBody.size());
                 out.append(generateVarData(varData));
+            }
+            finally
+            {
+                out.close();
             }
         }
     }
@@ -169,7 +179,7 @@ public class PythonGenerator implements CodeGenerator
 
                 generateGroupClassHeader(sb, groupName, tokens, index, indent + INDENT);
 
-                final List<Token> rootFields = new ArrayList<>();
+                final List<Token> rootFields = new ArrayList();
                 index = collectRootFields(tokens, ++index, rootFields);
                 sb.append(generateFields(groupName, rootFields, indent + INDENT));
 
@@ -445,7 +455,8 @@ public class PythonGenerator implements CodeGenerator
     {
         final String bitSetName = formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(bitSetName))
+        final Writer out = outputManager.createOutput(bitSetName);
+        try
         {
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateClassDeclaration(bitSetName));
@@ -461,6 +472,10 @@ public class PythonGenerator implements CodeGenerator
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
         }
+        finally
+        {
+            out.close();
+        }
     }
 
     private void generateEnum(final List<Token> tokens) throws IOException
@@ -468,12 +483,17 @@ public class PythonGenerator implements CodeGenerator
         final Token enumToken = tokens.get(0);
         final String enumName = formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(enumName))
+        final Writer out = outputManager.createOutput(enumName);
+        try
         {
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateEnumDeclaration(enumName));
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
             out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
+        }
+        finally
+        {
+            out.close();
         }
     }
 
@@ -481,12 +501,17 @@ public class PythonGenerator implements CodeGenerator
     {
         final String compositeName = formatClassName(tokens.get(0).name());
 
-        try (final Writer out = outputManager.createOutput(compositeName))
+        final Writer out = outputManager.createOutput(compositeName);
+        try
         {
             out.append(generateFileHeader(ir.applicableNamespace().replace('.', '_'), null));
             out.append(generateClassDeclaration(compositeName));
             out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).size()));
             out.append(generatePrimitivePropertyEncodings(compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
+        }
+        finally
+        {
+            out.close();
         }
     }
 

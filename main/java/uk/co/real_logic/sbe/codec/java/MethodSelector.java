@@ -18,11 +18,11 @@ import java.util.Set;
 public class MethodSelector
 {
     private final Set<String> ignoredMethods;
-    private final Map<Class, Set<String>> sortedMethods = new HashMap<>();
+    private final Map<Class, Set<String>> sortedMethods = new HashMap();
 
     public static Set<String> objectAndIteratorMethods()
     {
-        return new HashSet<>(Arrays.asList("hashCode", "clone", "toString", "getClass",
+        return new HashSet(Arrays.asList("hashCode", "clone", "toString", "getClass",
                 "next", "hasNext", "remove", "iterator"));
     }
 
@@ -61,7 +61,7 @@ public class MethodSelector
             }
             else
             {
-                Set<String> result = new LinkedHashSet<>();
+                Set<String> result = new LinkedHashSet();
                 for (Class groupClazz : order.value())
                 {
                     for (Method method : methods)

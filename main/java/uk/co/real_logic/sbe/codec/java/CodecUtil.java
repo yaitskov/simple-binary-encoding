@@ -316,7 +316,7 @@ public class CodecUtil
      */
     public static long uint32Get(final DirectBuffer buffer, final int index, final ByteOrder byteOrder)
     {
-        return buffer.getInt(index, byteOrder) & 0xFFFF_FFFFL;
+        return buffer.getInt(index, byteOrder) & 0xFFFFFFFFL;
     }
 
     /**
