@@ -11,8 +11,8 @@
     <property name="module.name" value="sbe"/>
     <property name="module.name.android" value="sbe-android"/>
 
-    <property name="ant.build.javac.source" value="1.7" />
-    <property name="ant.build.javac.target" value="1.7" />
+    <property name="ant.build.javac.source" value="1.6" />
+    <property name="ant.build.javac.target" value="1.6" />
 
     <property name="dir.main.src" location="main/java"/>
     <property name="dir.main.build" location="target/main/java/classes"/>
@@ -161,7 +161,7 @@
 
     <target name="-android:generateDebugKey" depends="-android:init,-android:checkDebugKey" unless="keystore.present">
         <echo message="generatingKeyStore" />
-        <genkey keystore="${file.test.android.debugkey}" storepass="android" alias="androiddebugkey" 
+        <genkey keystore="${file.test.android.debugkey}" storepass="android" alias="androiddebugkey"
             keyalg="RSA" validity="10000" dname="CN=CA"/>
     </target>
 
@@ -475,7 +475,7 @@
             </adb>
             <!-- trying to get the test-results.xml file from one of the 2 possible locations-->
             <!-- /data/data/${project.app.package}/files/test-results.xml -->
-            <!-- $EXTERNAL_STORAGE/Android/data/uk.co.real_logic.sbe.android.test/files/test-results.xml --> 
+            <!-- $EXTERNAL_STORAGE/Android/data/uk.co.real_logic.sbe.android.test/files/test-results.xml -->
             <adb command="shell" outputproperty="EXTERNAL_STORAGE" description="Get EXTERNAL_STORAGE property value">
                 <arg line="echo $EXTERNAL_STORAGE"/>
             </adb>
