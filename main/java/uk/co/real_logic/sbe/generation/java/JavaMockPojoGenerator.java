@@ -250,7 +250,7 @@ public class JavaMockPojoGenerator implements CodeGenerator
             indent + "{\n" +
             indent + "    private Iterator iterator;\n" +
             indent + "    private int count;\n" +
-            indent + "    public %1$sMock() { iterator = Collections.emptyIterator(); }\n" +
+            indent + "    public %1$sMock() { iterator = Collections.emptyList().iterator(); }\n" +
             indent + "    public %1$sMock(%1$s... items) {\n" +
             indent + "        iterator = Arrays.asList(items).iterator();\n" +
             indent + "        count = items.length;\n" +
