@@ -93,6 +93,15 @@ public class MethodValuesSerializerTest
             return X.this;
         }
 
+        public int blaGlaLength() {
+            return 3;
+        }
+
+        public int getBlaGla(final byte[] dst, final int dstof) {
+            System.arraycopy("abc".getBytes(), 0, dst, dstof, 3);
+            return 3;
+        }
+
         public static int staticPublicIntIgnored()
         {
             return 23;
@@ -108,6 +117,8 @@ public class MethodValuesSerializerTest
         expected.add("publicInt", new JsonPrimitive(1));
         expected.add("publicString", new JsonPrimitive("hello"));
         expected.add("publicEnum", new JsonPrimitive("A"));
+        expected.add("blaGla", new JsonPrimitive("abc"));
+        expected.add("blaGlaLength", new JsonPrimitive(3));
         JsonArray arr = new JsonArray();
         arr.add(new JsonPrimitive(1));
         expected.add("publicIntArr", arr);

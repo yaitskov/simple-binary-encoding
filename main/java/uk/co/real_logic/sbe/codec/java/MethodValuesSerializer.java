@@ -9,6 +9,7 @@ import com.google.gson.JsonPrimitive;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -101,6 +102,46 @@ public class MethodValuesSerializer
                 continue;
             }
             result.add(method.getName(), serialize(re));
+        }
+        for (Method method : clazz.getDeclaredMethods())
+        {
+            if (method.getReturnType() != Integer.TYPE)
+            {
+                continue;
+            }
+            final int mods = method.getModifiers();
+            if (!Modifier.isPublic(mods))
+            {
+                continue;
+            }
+            if (Modifier.isStatic(mods))
+            {
+                continue;
+            }
+            Class[] params = method.getParameterTypes();
+            if (params.length != 2
+                    || !byte[].class.equals(params[0])
+                    || !int.class.equals(params[1]))
+            {
+                continue;
+            }
+            String fieldName = Character.toLowerCase(method.getName().charAt(3))
+                    + method.getName().substring(4);
+            String lengthMethodName = fieldName + "Length";
+            try
+            {
+                Method lengthMethod = clazz.getDeclaredMethod(lengthMethodName);
+                int len = (Integer) lengthMethod.invoke(object);
+                byte[] buf = new byte[len];
+                method.invoke(object, buf, 0);
+                int i = 0;
+                while (i < buf.length && buf[i] != 0) { ++i; }
+                result.add(fieldName, serialize(new String(buf, 0, i)));
+            }
+            catch (NoSuchMethodException e)
+            {
+                throw new RuntimeException(e);
+            }
         }
         return result;
     }
